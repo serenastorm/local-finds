@@ -1,0 +1,26 @@
+{
+  "name": "local-finds",
+  "version": "1.0.0",
+  "description": "",
+  "main": "opening-times.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typescript": "tsc --project .",
+    "minify": "uglifyjs-folder scripts --each --output lib",
+    "build": "npm run typescript && npm run minify",
+    "start": "npm run typescript -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serenastorm/local-finds.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/serenastorm/local-finds/issues"
+  },
+  "homepage": "https://github.com/serenastorm/local-finds#readme",
+  "dependencies": {
+    "typescript": "^5.1.6",
+    "uglifyjs-folder": "^3.3.0"
+  }
+}
