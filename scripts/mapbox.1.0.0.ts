@@ -70,14 +70,21 @@ $(".location").each(function (index) {
     }
   };
 
-  // MARKERS EVENT
+  // Marker event
   marker_el.addEventListener("click", () => {
     const scrollIntoView = true;
     updateActiveItem(scrollIntoView);
   });
 
-  // LIST ITEM EVENT
+  // List item event
   this.addEventListener("click", () => {
     updateActiveItem();
+  });
+
+  // Map event (user clicks the map and closes the popup)
+  // Basically tracks changes to active_popup
+  item_popup.on("close", () => {
+    active_item.classList.remove("active");
+    active_marker = undefined;
   });
 });

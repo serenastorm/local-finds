@@ -59,4 +59,8 @@ $(".location").each(function (index) {
     this.addEventListener("click", function () {
         updateActiveItem();
     });
+    item_popup.on("close", function () {
+        active_item.classList.remove("active");
+        active_marker = undefined;
+    });
 });
