@@ -158,7 +158,6 @@ window.onload = function () {
                 var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
                 addedNodes.forEach(function (addedNode) {
                     if (addedNode.parentElement.id == "list-wrapper") {
-                        console.log(addedNode.className);
                         var locationName = addedNode.dataset.location;
                         var hours = addedNode.dataset.hours;
                         if (locationName && hours) {

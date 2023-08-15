@@ -8,9 +8,9 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.NavigationControl());
 var active_popup, active_marker, active_item;
-$(".location").each(function (index) {
+var renderLocationOnMap = function () {
     var _this = this;
-    var cms_item = $(this);
+    var cms_item = this;
     var lat = cms_item.find(".lat").text();
     var lon = cms_item.find(".lon").text();
     var item_popup = this.popup;
@@ -63,4 +63,34 @@ $(".location").each(function (index) {
         active_item.classList.remove("active");
         active_marker = undefined;
     });
-});
+};
+window.onload = function () {
+    var initialLocations = document.querySelectorAll(".location");
+    initialLocations.forEach(function (initialLocation) {
+        renderLocationOnMap.call(initialLocation);
+    });
+    var observer = new MutationObserver(function (mutationList) {
+        for (var _i = 0, mutationList_1 = mutationList; _i < mutationList_1.length; _i++) {
+            var mutation = mutationList_1[_i];
+            if (mutation.type === "childList") {
+                console.log("A child node has been added or removed.");
+                var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
+                var removedNodes = Array.prototype.slice.call(mutation.removedNodes);
+                addedNodes.forEach(function (addedNode) {
+                    if (addedNode.parentElement.id == "list-wrapper") {
+                        console.log("Added node", addedNode);
+                        renderLocationOnMap.call(addedNode);
+                    }
+                });
+                removedNodes.forEach(function (removedNode) {
+                    if (removedNode.parentElement.id == "list-wrapper") {
+                        console.log("Removed node", removedNode);
+                        removedNode.marker.remove();
+                    }
+                });
+            }
+        }
+    });
+    var listWrapper = document.getElementById("list-wrapper");
+    observer.observe(listWrapper, { childList: true });
+};
