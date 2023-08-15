@@ -1,9 +1,5 @@
-// import $ from "jquery";
-// import mapboxgl from "mapbox-gl";
-
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYnlhbmltYSIsImEiOiJjbGt3eTQxMXUwNXlrM3FueTVkYTUyZmwwIn0.ZUthdqyjpaM2LxlZtUfSaw";
-
 var map = new mapboxgl.Map({
   container: "map",
   style: "mapbox://styles/byanima/clkx0n1rk005z01qsdmyd9v0l",
@@ -16,117 +12,78 @@ map.addControl(new mapboxgl.NavigationControl());
 
 var active_popup, active_marker, active_item;
 
-var renderLocationOnMap = function () {
-  console.log("renderLocation", this);
-  let cms_item = this;
-  let lat = cms_item.find(".lat").text();
-  let lon = cms_item.find(".lon").text();
+$(".location").each(function (index) {
+  let cmsItem = $(this);
+  let lat = cmsItem.find(".lat").text();
+  let lon = cmsItem.find(".lon").text();
   let item_popup = this.popup;
 
-  let marker_el = document.createElement("div");
-  let item_category = cms_item.find(".location-category").text();
-  marker_el.classList.add("marker");
-  marker_el.classList.add(`marker-${item_category.toLowerCase()}`);
-  let popup_html = cms_item.find(".pre-popup")[0].outerHTML;
+  let item_marker = document.createElement("div");
+  let item_category = cmsItem.find(".location-category").text();
+  item_marker.classList.add("marker");
+  item_marker.classList.add(`marker-${item_category.toLowerCase()}`);
+  let body = cmsItem.find(".pre-popup");
 
   item_popup = new mapboxgl.Popup({
     offset: 25,
     closeButton: false,
     maxWidth: "auto",
-  }).setHTML(popup_html);
+  }).setHTML(body[0].outerHTML);
 
   let mark = this.marker;
-  mark = new mapboxgl.Marker(marker_el)
+  mark = new mapboxgl.Marker(item_marker)
     .setLngLat([lon, lat])
     .setPopup(item_popup)
     .addTo(map);
 
-  const updateActiveItem = (scrollIntoView?: boolean) => {
-    // Remove the previous active popup if it exists
+  //MARKERS EVENT
+
+  item_marker.addEventListener("click", () => {
+    item_popup.addTo(map); // show popup
     if (active_marker != undefined) {
       active_item.classList.remove("active");
-      active_popup.remove();
+      item_popup.remove(); // remove the previous active popup if it's existing
     }
-
-    item_popup.addTo(map);
-    active_popup = item_popup;
-
-    active_marker = marker_el;
-
     active_item = this;
     active_item.classList.add("active");
-
+    active_item.scrollIntoViewIfNeeded({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "start",
+    });
+    active_marker = item_marker; // set the current popup active
     map.flyTo({
       center: [lon, lat],
       essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-      zoom: map.getZoom(),
     });
-
-    if (scrollIntoView) {
-      active_item.scrollIntoViewIfNeeded({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "start",
-      });
-    }
-  };
-
-  // Marker event
-  marker_el.addEventListener("click", () => {
-    const scrollIntoView = true;
-    updateActiveItem(scrollIntoView);
   });
 
-  // List item event
+  //LIST ITEMS EVENT
+
   this.addEventListener("click", () => {
-    updateActiveItem();
+    map.flyTo({
+      center: [lon, lat],
+      essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+    });
+
+    if (active_marker != undefined) {
+      active_item.classList.remove("active");
+      active_marker.classList.remove("show"); // we also come back to the original marker's image for the previous active marker
+      active_popup.remove(); // remove the previous active popup if it's existing
+    }
+    item_popup.addTo(map); // toggle popup open or closed
+    item_marker.classList.add("show");
+    active_marker = item_marker;
+    active_popup = item_popup;
+    active_item = this;
+    active_item.classList.add("active");
   });
 
   // Map event (user clicks the map and closes the popup)
   // Basically tracks changes to active_popup
-  item_popup.on("close", () => {
-    active_item.classList.remove("active");
-    active_marker = undefined;
-  });
-};
 
-window.onload = function () {
-  const initialLocations = document.querySelectorAll<HTMLElement>(`.location`);
-  initialLocations.forEach(function (initialLocation) {
-    renderLocationOnMap.call(initialLocation);
-  });
-
-  var observer = new MutationObserver(function (mutationList) {
-    for (
-      var _i = 0, mutationList_1 = mutationList;
-      _i < mutationList_1.length;
-      _i++
-    ) {
-      var mutation = mutationList_1[_i];
-      if (mutation.type === "childList") {
-        console.log("A child node has been added or removed.");
-        var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
-        var removedNodes = Array.prototype.slice.call(mutation.removedNodes);
-
-        addedNodes.forEach(function (addedNode) {
-          console.log("Parent added node", addedNode.parentElement);
-          if (addedNode.parentElement.classList.contains("list-item")) {
-            console.log("Added node", addedNode);
-            renderLocationOnMap.call(addedNode);
-          }
-        });
-
-        removedNodes.forEach(function (removedNode) {
-          console.log("Parent removed node", removedNode.parentElement);
-          // Hide markers if items are filtered out
-          if (removedNode.parentElement.classList.contains("list-item")) {
-            console.log("Removed node", removedNode);
-            removedNode.marker.remove();
-          }
-        });
-      }
-    }
-  });
-  var locationsWrapper = document.getElementById("list-wrapper");
-  observer.observe(locationsWrapper, { childList: true });
-};
+  // item_popup.on("close", () => {
+  //   active_item.classList.remove("active");
+  //   active_marker = undefined;
+  // });
+});

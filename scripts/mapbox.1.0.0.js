@@ -8,92 +8,65 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.NavigationControl());
 var active_popup, active_marker, active_item;
-var renderLocationOnMap = function () {
+$(".location").each(function (index) {
     var _this = this;
-    console.log("renderLocation", this);
-    var cms_item = this;
-    var lat = cms_item.find(".lat").text();
-    var lon = cms_item.find(".lon").text();
+    var cmsItem = $(this);
+    var lat = cmsItem.find(".lat").text();
+    var lon = cmsItem.find(".lon").text();
     var item_popup = this.popup;
-    var marker_el = document.createElement("div");
-    var item_category = cms_item.find(".location-category").text();
-    marker_el.classList.add("marker");
-    marker_el.classList.add("marker-".concat(item_category.toLowerCase()));
-    var popup_html = cms_item.find(".pre-popup")[0].outerHTML;
+    var item_marker = document.createElement("div");
+    var item_category = cmsItem.find(".location-category").text();
+    item_marker.classList.add("marker");
+    item_marker.classList.add("marker-".concat(item_category.toLowerCase()));
+    var body = cmsItem.find(".pre-popup");
     item_popup = new mapboxgl.Popup({
         offset: 25,
         closeButton: false,
         maxWidth: "auto",
-    }).setHTML(popup_html);
+    }).setHTML(body[0].outerHTML);
     var mark = this.marker;
-    mark = new mapboxgl.Marker(marker_el)
+    mark = new mapboxgl.Marker(item_marker)
         .setLngLat([lon, lat])
         .setPopup(item_popup)
         .addTo(map);
-    var updateActiveItem = function (scrollIntoView) {
+    item_marker.addEventListener("click", function () {
+        item_popup.addTo(map);
         if (active_marker != undefined) {
             active_item.classList.remove("active");
-            active_popup.remove();
+            item_popup.remove();
         }
-        item_popup.addTo(map);
-        active_popup = item_popup;
-        active_marker = marker_el;
         active_item = _this;
         active_item.classList.add("active");
+        active_item.scrollIntoViewIfNeeded({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+        });
+        active_marker = item_marker;
         map.flyTo({
             center: [lon, lat],
             essential: true,
-            zoom: map.getZoom(),
         });
-        if (scrollIntoView) {
-            active_item.scrollIntoViewIfNeeded({
-                behavior: "smooth",
-                block: "nearest",
-                inline: "start",
-            });
-        }
-    };
-    marker_el.addEventListener("click", function () {
-        var scrollIntoView = true;
-        updateActiveItem(scrollIntoView);
     });
     this.addEventListener("click", function () {
-        updateActiveItem();
+        map.flyTo({
+            center: [lon, lat],
+            essential: true,
+        });
+        if (active_marker != undefined) {
+            active_item.classList.remove("active");
+            active_marker.classList.remove("show");
+            active_popup.remove();
+        }
+        item_popup.addTo(map);
+        item_marker.classList.add("show");
+        active_marker = item_marker;
+        active_popup = item_popup;
+        active_item = _this;
+        active_item.classList.add("active");
     });
     item_popup.on("close", function () {
         active_item.classList.remove("active");
         active_marker = undefined;
     });
-};
-window.onload = function () {
-    var initialLocations = document.querySelectorAll(".location");
-    initialLocations.forEach(function (initialLocation) {
-        renderLocationOnMap.call(initialLocation);
-    });
-    var observer = new MutationObserver(function (mutationList) {
-        for (var _i = 0, mutationList_1 = mutationList; _i < mutationList_1.length; _i++) {
-            var mutation = mutationList_1[_i];
-            if (mutation.type === "childList") {
-                console.log("A child node has been added or removed.");
-                var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
-                var removedNodes = Array.prototype.slice.call(mutation.removedNodes);
-                addedNodes.forEach(function (addedNode) {
-                    console.log("Parent added node", addedNode.parentElement);
-                    if (addedNode.parentElement.classList.contains("list-item")) {
-                        console.log("Added node", addedNode);
-                        renderLocationOnMap.call(addedNode);
-                    }
-                });
-                removedNodes.forEach(function (removedNode) {
-                    console.log("Parent removed node", removedNode.parentElement);
-                    if (removedNode.parentElement.classList.contains("list-item")) {
-                        console.log("Removed node", removedNode);
-                        removedNode.marker.remove();
-                    }
-                });
-            }
-        }
-    });
-    var locationsWrapper = document.getElementById("list-wrapper");
-    observer.observe(locationsWrapper, { childList: true });
-};
+});
