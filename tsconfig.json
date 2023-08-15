@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./scripts",
     "removeComments": true,
     "lib": ["es5", "es6", "dom"]
   }

@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/serenastorm/local-finds#readme",
   "dependencies": {
+    "jquery": "^3.7.0",
+    "mapbox-gl": "^2.15.0",
     "typescript": "^5.1.6",
     "uglifyjs-folder": "^3.3.0"
   }
