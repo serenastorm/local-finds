@@ -258,7 +258,7 @@ window.onload = function () {
 
         addedNodes.forEach((addedNode) => {
           if (addedNode.parentElement.id == "list-wrapper") {
-            alert(addedNode.parentElement.className);
+            console.log(addedNode.className);
 
             const locationName = addedNode.dataset.location;
             const hours = addedNode.dataset.hours;
