@@ -17,6 +17,7 @@ map.addControl(new mapboxgl.NavigationControl());
 var active_popup, active_marker, active_item;
 
 var renderLocationOnMap = function () {
+  console.log("renderLocation", this);
   let cms_item = this;
   let lat = cms_item.find(".lat").text();
   let lon = cms_item.find(".lon").text();
@@ -108,15 +109,17 @@ window.onload = function () {
         var removedNodes = Array.prototype.slice.call(mutation.removedNodes);
 
         addedNodes.forEach(function (addedNode) {
-          if (addedNode.parentElement.id == "list-wrapper") {
+          console.log("Parent added node", addedNode.parentElement);
+          if (addedNode.parentElement.classList.contains("list-item")) {
             console.log("Added node", addedNode);
             renderLocationOnMap.call(addedNode);
           }
         });
 
         removedNodes.forEach(function (removedNode) {
+          console.log("Parent removed node", removedNode.parentElement);
           // Hide markers if items are filtered out
-          if (removedNode.parentElement.id == "list-wrapper") {
+          if (removedNode.parentElement.classList.contains("list-item")) {
             console.log("Removed node", removedNode);
             removedNode.marker.remove();
           }
@@ -124,6 +127,6 @@ window.onload = function () {
       }
     }
   });
-  var listWrapper = document.getElementById("list-wrapper");
-  observer.observe(listWrapper, { childList: true });
+  var locationsWrapper = document.getElementById("list-wrapper");
+  observer.observe(locationsWrapper, { childList: true });
 };
