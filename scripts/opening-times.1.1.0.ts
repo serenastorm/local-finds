@@ -245,7 +245,7 @@ window.onload = function () {
     if (locationName && hours) {
       renderLocationStatus({ locationName, hours });
 
-      console.log({ locationName, hours });
+      // console.log({ locationName, hours });
     }
   });
 
@@ -253,7 +253,7 @@ window.onload = function () {
   const observer = new MutationObserver((mutationList) => {
     for (const mutation of mutationList) {
       if (mutation.type === "childList") {
-        console.log("A child node has been added or removed.");
+        // console.log("A child node has been added or removed.");
         const addedNodes = Array.prototype.slice.call(mutation.addedNodes);
 
         addedNodes.forEach((addedNode) => {
@@ -263,7 +263,7 @@ window.onload = function () {
 
             if (locationName && hours) {
               renderLocationStatus({ locationName, hours });
-              console.log({ locationName, hours });
+              // console.log({ locationName, hours });
             }
           }
         });

@@ -147,14 +147,12 @@ window.onload = function () {
         var hours = initialLocation.dataset.hours;
         if (locationName && hours) {
             renderLocationStatus({ locationName: locationName, hours: hours });
-            console.log({ locationName: locationName, hours: hours });
         }
     });
     var observer = new MutationObserver(function (mutationList) {
         for (var _i = 0, mutationList_1 = mutationList; _i < mutationList_1.length; _i++) {
             var mutation = mutationList_1[_i];
             if (mutation.type === "childList") {
-                console.log("A child node has been added or removed.");
                 var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
                 addedNodes.forEach(function (addedNode) {
                     if (addedNode.parentElement.id == "list-wrapper") {
@@ -162,7 +160,6 @@ window.onload = function () {
                         var hours = addedNode.dataset.hours;
                         if (locationName && hours) {
                             renderLocationStatus({ locationName: locationName, hours: hours });
-                            console.log({ locationName: locationName, hours: hours });
                         }
                     }
                 });
