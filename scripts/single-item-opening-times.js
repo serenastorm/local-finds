@@ -143,7 +143,7 @@ function renderLocationStatus(_a) {
     getStatus();
 }
 window.onload = function () {
-    var initialLocations = document.querySelectorAll(".list-item[data-location][data-hours]");
+    var initialLocations = document.querySelectorAll(".single-item[data-location][data-hours]");
     initialLocations.forEach(function (initialLocation) {
         var locationName = initialLocation.dataset.location;
         var hours = initialLocation.dataset.hours;
@@ -151,23 +151,4 @@ window.onload = function () {
             renderLocationStatus({ locationName: locationName, hours: hours });
         }
     });
-    var observer = new MutationObserver(function (mutationList) {
-        for (var _i = 0, mutationList_1 = mutationList; _i < mutationList_1.length; _i++) {
-            var mutation = mutationList_1[_i];
-            if (mutation.type === "childList") {
-                var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
-                addedNodes.forEach(function (addedNode) {
-                    if (addedNode.parentElement.id == "list-wrapper") {
-                        var locationName = addedNode.dataset.location;
-                        var hours = addedNode.dataset.hours;
-                        if (locationName && hours) {
-                            renderLocationStatus({ locationName: locationName, hours: hours });
-                        }
-                    }
-                });
-            }
-        }
-    });
-    var listWrapper = document.getElementById("list-wrapper");
-    observer.observe(listWrapper, { childList: true });
 };

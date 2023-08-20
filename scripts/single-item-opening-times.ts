@@ -212,7 +212,7 @@ function renderLocationStatus({ locationName, hours }) {
 // Get initial locations on first load
 window.onload = function () {
   const initialLocations = document.querySelectorAll<HTMLElement>(
-    `.list-item[data-location][data-hours]`
+    `.single-item[data-location][data-hours]`
   );
 
   initialLocations.forEach((initialLocation) => {
@@ -221,33 +221,6 @@ window.onload = function () {
 
     if (locationName && hours) {
       renderLocationStatus({ locationName, hours });
-
-      // console.log({ locationName, hours });
     }
   });
-
-  // Listen for ny new children of the list-wrapper element
-  const observer = new MutationObserver((mutationList) => {
-    for (const mutation of mutationList) {
-      if (mutation.type === "childList") {
-        // console.log("A child node has been added or removed.");
-        const addedNodes = Array.prototype.slice.call(mutation.addedNodes);
-
-        addedNodes.forEach((addedNode) => {
-          if (addedNode.parentElement.id == "list-wrapper") {
-            const locationName = addedNode.dataset.location;
-            const hours = addedNode.dataset.hours;
-
-            if (locationName && hours) {
-              renderLocationStatus({ locationName, hours });
-              // console.log({ locationName, hours });
-            }
-          }
-        });
-      }
-    }
-  });
-
-  const listWrapper = document.getElementById("list-wrapper");
-  observer.observe(listWrapper, { childList: true });
 };
