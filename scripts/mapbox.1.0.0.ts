@@ -49,11 +49,16 @@ const renderMap = () => {
     // MARKERS EVENT
 
     item_marker.addEventListener("click", () => {
-      item_popup.addTo(map); // show popup
       if (active_marker != undefined) {
         active_item.classList.remove("active");
-        item_popup.remove(); // remove the previous active popup if it's existing
+        active_marker.classList.remove("show"); // we also come back to the original marker's image for the previous active marker
+        active_popup.remove(); // remove the previous active popup if it's existing
       }
+
+      item_popup.addTo(map); // show popup
+      active_popup = item_popup;
+      item_marker.classList.add("show");
+
       active_item = this;
       active_item.classList.add("active");
       active_item.scrollIntoViewIfNeeded({
@@ -71,31 +76,42 @@ const renderMap = () => {
     // LIST ITEMS EVENT
 
     this.addEventListener("click", () => {
-      map.flyTo({
-        center: [lon, lat],
-        essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-      });
-
       if (active_marker != undefined) {
         active_item.classList.remove("active");
         active_marker.classList.remove("show"); // we also come back to the original marker's image for the previous active marker
         active_popup.remove(); // remove the previous active popup if it's existing
       }
-      item_popup.addTo(map); // toggle popup open or closed
-      item_marker.classList.add("show");
-      active_marker = item_marker;
+
+      item_popup.addTo(map); // show popup
       active_popup = item_popup;
+      item_marker.classList.add("show");
+
       active_item = this;
       active_item.classList.add("active");
+      active_item.scrollIntoViewIfNeeded({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "start",
+      });
+      active_marker = item_marker; // set the current popup active
+      map.flyTo({
+        center: [lon, lat],
+        essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+      });
+
+      map.flyTo({
+        center: [lon, lat],
+        essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+      });
     });
 
     // Map event (user clicks the map and closes the popup)
     // Basically tracks changes to active_popup
 
-    // item_popup.on("close", () => {
-    //   active_item.classList.remove("active");
-    //   active_marker = undefined;
-    // });
+    item_popup.on("close", () => {
+      active_item.classList.remove("active");
+      active_marker = undefined;
+    });
   });
 };
 

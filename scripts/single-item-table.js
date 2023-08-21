@@ -1,6 +1,13 @@
+// https://cdn.jsdelivr.net/npm/luxon@3.4.0/build/global/luxon.min.js
+{
+  /* <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.0/build/global/luxon.min.js"></script>; */
+}
+
 // Replace this with the field value
 const hours = `{{wf {&quot;path&quot;:&quot;days-2&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}`;
 const table = document.getElementById("opening-times");
+
+var DateTime = luxon.DateTime;
 
 // the order of JS week days - do not update!
 const JS_WEEK_DAYS = [
@@ -31,16 +38,25 @@ const WEEK_DAYS = [
 ];
 
 const render12HourTime = ({ hour, min }) => {
+  const originalTimeZone = "Europe/London";
+
   const timeString = `${hour.length === 1 ? `0${hour}` : hour}:${min}:00`;
+
   // Prepend any date, it doesn't matter
-  const timeString12hr = new Date(
-    "1970-01-01T" + timeString + "Z"
-  ).toLocaleTimeString("en-GB", {
-    timeZone: "Europe/London",
-    hour12: true,
-    hour: "numeric",
-    minute: "numeric",
+  // 1970-01-01T15:00:00.000+01:00
+  const overrideZone = DateTime.fromISO(`1970-01-01T${timeString}`, {
+    zone: originalTimeZone,
   });
+
+  const timeString12hr = new Date(overrideZone.toString()).toLocaleTimeString(
+    "en-GB",
+    {
+      timeZone: originalTimeZone,
+      hour12: true,
+      hour: "numeric",
+      minute: "numeric",
+    }
+  );
 
   return timeString12hr;
 };

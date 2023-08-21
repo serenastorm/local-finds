@@ -35,11 +35,14 @@ var renderMap = function () {
             .addTo(map);
         markers.push(mark);
         item_marker.addEventListener("click", function () {
-            item_popup.addTo(map);
             if (active_marker != undefined) {
                 active_item.classList.remove("active");
-                item_popup.remove();
+                active_marker.classList.remove("show");
+                active_popup.remove();
             }
+            item_popup.addTo(map);
+            active_popup = item_popup;
+            item_marker.classList.add("show");
             active_item = _this;
             active_item.classList.add("active");
             active_item.scrollIntoViewIfNeeded({
@@ -54,21 +57,34 @@ var renderMap = function () {
             });
         });
         this.addEventListener("click", function () {
-            map.flyTo({
-                center: [lon, lat],
-                essential: true,
-            });
             if (active_marker != undefined) {
                 active_item.classList.remove("active");
                 active_marker.classList.remove("show");
                 active_popup.remove();
             }
             item_popup.addTo(map);
-            item_marker.classList.add("show");
-            active_marker = item_marker;
             active_popup = item_popup;
+            item_marker.classList.add("show");
             active_item = _this;
             active_item.classList.add("active");
+            active_item.scrollIntoViewIfNeeded({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "start",
+            });
+            active_marker = item_marker;
+            map.flyTo({
+                center: [lon, lat],
+                essential: true,
+            });
+            map.flyTo({
+                center: [lon, lat],
+                essential: true,
+            });
+        });
+        item_popup.on("close", function () {
+            active_item.classList.remove("active");
+            active_marker = undefined;
         });
     });
 };
